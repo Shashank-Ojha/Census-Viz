@@ -7,20 +7,9 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <title>{{title}}</title>
 
-    {{!-- If you dont want to use Pure, delete out the snippet below --}}
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
-        <!--[if lte IE 8]>
-            {{addRemoteCSS "http://yui.yahooapis.com/pure/0.5.0/grids-responsive-old-ie-min.css"}}
-        <![endif]-->
-        <!--[if gt IE 8]><!-->
-            {{addRemoteCSS "http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css"}}
-        <!--<![endif]-->
-
-    {{!-- 
-    If you want to use Bootstrap, uncomment the line below and delete the Pure CSS lines above.
-    {{addRemoteCSS "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"}}
-    --}}
     {{addLocalCSS "/css/app.css"}}
+    {{addLocalCSS "/css/semantic.css"}}
+
 
     {{#remoteCSS}}
     <link rel="stylesheet" href="{{{.}}}">
@@ -39,7 +28,7 @@
       {{/if}}
     {{/localCSS}}
 
-<body lang="en">
+<body lang="en" id="main">
 
     <div class="container">
         {{{body}}}
@@ -52,11 +41,12 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-    {{!-- Uncomment the line below if you want to use Bootstrap's JS modules --}}
-    <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
+
     {{#localJS}}
         <script src="{{{.}}}"></script>
     {{/localJS}}
+
+
 </body>
 
 </html>
