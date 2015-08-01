@@ -107,6 +107,12 @@ function setupServer (worker) {
     // available to the client.
     router.get('/', [ middleware.exposeTemplates(), routes.render('home') ]);
 
+    app.get('/query/:level/:year', function(req, res) {
+        console.log(req.params)
+        var level = req.params.level;
+        var year = req.params.year;
+        res.send(level + " " + year)
+    })
     // Error handling middleware
     app.use(function(req, res, next){
         res.render('404', { status: 404, url: req.url });
