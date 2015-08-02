@@ -5,10 +5,13 @@
   <a class="item">District</a>
   <a class="item">County</a>
 </div>
-<div class="ui three item menu">
-	<a class="item">African American</a>
-	<a class="active item">Caucasian</a>
-	<a class="item">Asian American</a>
+<div class="ui five item menu">
+	<a class="race item" data-type="black">African American</a>
+	<a class="race item" data-type="white">Caucasian</a>
+	<a class="race item" data-type="indian">Native American</a>
+	<a class="race item" data-type="asian">Asian</a>
+	<a class="race item" data-type="mixed">Mixed</a>
 </div>
+
 <div id="map" style="height:90vh"></div>
 {{addLocalJS "/js/script.js"}}
