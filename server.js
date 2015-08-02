@@ -143,7 +143,6 @@ function setupServer (worker) {
             if(!isNaN(E)) 
                 totalPop+= E; 
             var race = req.params.race;
-            // console.log(totalPop);
             var target = parseInt(json[x][race+year])
             if(isNaN(target))
                 var density = 0;
@@ -151,9 +150,53 @@ function setupServer (worker) {
                 var density = target*1.0/totalPop * 100;
             var obj = {}
             obj[json[x]["STATE"]] = Math.round(density,2)
-            // console.log(stringJson);
             list.push(obj);
         }
+        res.send(list);
+    });
+
+     app.get('/query/county/:state/:year/:race', function(req, res) {
+        // res.setHeader('Content-Type', 'application/json');
+        // console.log(req.params);
+        var level = "county";
+        var year = req.params.year;
+        var state = req.params.state;
+        var filename = "/"+year+"_"+level+".json";
+        var pathtoFile = config.dirs.csv + filename;
+        var json = require(pathtoFile);
+        var data = _.filter(json, function(point){ 
+                  return point["STATE"] == state; 
+             });
+        var list = [];
+        for(x = 0; x < data.length; x++)
+        {
+            var totalPop = 0;
+            var A =  parseInt(data[x]["B18AA"+year]);
+            if(!isNaN(A)) 
+                totalPop+= A;
+            var B =  parseInt(data[x]["B18AB"+year])
+            if(!isNaN(B)) 
+                totalPop+= B;
+            var C =  parseInt(data[x]["B18AC"+year]) 
+            if(!isNaN(C)) 
+                totalPop+= C;
+            var D =  parseInt(data[x]["B18AD"+year]) 
+            if(!isNaN(D)) 
+                totalPop+= D;
+            var E =  parseInt(data[x]["B18AE"+year])
+            if(!isNaN(E)) 
+                totalPop+= E; 
+            var race = req.params.race;
+            var target = parseInt(data[x][race+year])
+            if(isNaN(target))
+                var density = 0;
+            else
+                var density = target*1.0/totalPop * 100;
+            var obj = {}
+            obj[data[x]["COUNTY"]] = Math.round(density,2)
+            list.push(obj);
+        }
+        console.log(list);
         res.send(list);
     });
 
