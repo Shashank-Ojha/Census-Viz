@@ -1,8 +1,11 @@
 var map = L.map('map').setView([37.8, -96], 4);
 var initalized = false;
 var info;
+var min = 101;
+var max = 0;
+var diff;
 
-var info = {
+var translator = {
 	"white": "B18AA",
 	"black": "B18AB",
 	"indian": "B18AC",
@@ -17,7 +20,11 @@ var options = {
 var items = document.querySelectorAll(".race")
 for(var i = 0; i < items.length; i++){
 	items[i].addEventListener("click", function(){
-		options.race = info[this.dataset.type];
+		for (var i = items.length - 1; i >= 0; i--) {
+			items[i].classList.remove('active');
+		};
+		this.classList.add('active');
+		options.race = translator[this.dataset.type];
 		$.get( "/query/state/1970/" + options.race, function( data ) {
 		  modifyData(JSON.parse(data));
 		  init()
@@ -89,33 +96,40 @@ var statesData = {"type":"FeatureCollection","features":[
 	]};
 
 function modifyData(data){
-
-
-
+	var percentages = [];
 	for (var i = statesData.features.length - 1; i >= 0; i--) {
-		console.log(statesData.features[i].properties.name);
-		console.log(statesData.features[i].properties.density)
-		if(statesData.features[i].properties.name in data){
+		// console.log(statesData.features[i].properties.name);
+		// console.log(statesData.features[i].properties.density);
+		if(statesData.features[i].properties.name in data){;
 			statesData.features[i].properties.density = data[statesData.features[i].properties.name];
+			percentages.push(data[statesData.features[i].properties.name]);
 		}
 	};
+	// console.log(percentages)
+	max = 0;
+	min = 101;
+	diff = 0;
 
-	console.log(statesData)
-
+	for (var i = percentages.length - 1; i >= 0; i--) {
+		console.log(percentages[i], min, max, i)
+		if(percentages[i] < min){
+			min = percentages[i];
+		}
+		if(percentages[i] > max){
+			max = percentages[i];
+		}
+	};
+	diff = (max-min)/6;
 }
-
-
-
-
 
 function init(){
 	if(initalized){
+
 		map.eachLayer(function (layer) {
 			if(layer._tiles == null) map.removeLayer(layer);
 		});
 		if(info){
 			map.removeControl(info)
-
 		}
 	}
 
@@ -142,14 +156,14 @@ function init(){
 
 	// get color depending on population density value
 	function getColor(d) {
-		return d > 1000 ? '#800026' :
-		       d > 500  ? '#BD0026' :
-		       d > 200  ? '#E31A1C' :
-		       d > 100  ? '#FC4E2A' :
-		       d > 50   ? '#FD8D3C' :
-		       d > 20   ? '#FEB24C' :
-		       d > 10   ? '#FED976' :
-		                  '#FFEDA0';
+		return d > max 			? '#800026' :
+		       d > min+diff*5  	? '#BD0026' :
+		       d > min+diff*4  	? '#E31A1C' :
+		       d > min+diff*3  	? '#FC4E2A' :
+		       d > min+diff*2   ? '#FD8D3C' :
+		       d > min+diff  	? '#FEB24C' :
+		       d > min   		? '#FED976' :
+		                  		  '#FFEDA0';
 	}
 
 	function style(feature) {
@@ -205,13 +219,4 @@ function init(){
 	}).addTo(map);
 
 	map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
-}
-
-function reset(){
-	map.eachLayer(function (layer) {
-		if(layer._tiles == null)
-    		map.removeLayer(layer);
-	});
-	console.log(map._layers);
-	init();
 }
