@@ -150,7 +150,7 @@ function setupServer (worker) {
                 var density = 0;
             else
                 var density = target*1.0/totalPop * 100;
-            obj[json[x]["STATE"]] = Math.round(density,2)
+            obj[json[x]["STATE"]] = Math.round(density*100)/100;
         }
         res.send(JSON.stringify(obj));
     });
@@ -192,7 +192,7 @@ function setupServer (worker) {
                 var density = 0;
             else
                 var density = target*1.0/totalPop * 100;
-            obj[data[x]["COUNTY"]] = Math.round(density,2)
+            obj[data[x]["COUNTY"]] = Math.round(density*100)/100;
         }
         res.send(JSON.stringify(obj));
     });
@@ -233,7 +233,7 @@ function setupServer (worker) {
         else
             var density = parseInt(data[0][race+year])*1.0/totalPop * 100;
         var obj = {}
-        obj[state] = Math.round(density,2);  
+        obj[state] = Math.round(density*100)/100;  
         res.send(JSON.stringify(obj));
     });
 
