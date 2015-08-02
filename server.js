@@ -13,7 +13,6 @@ routes       = require('./routes'),
 middleware   = require('./middleware'),
 config       = require('./config'),
 utils        = require('./lib/utils'),
-csv          = require('csv-parser'),
 fs           = require('fs'),
 port         = (process.env.PORT || 8000);
 
