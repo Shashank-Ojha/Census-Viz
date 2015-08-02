@@ -154,6 +154,76 @@ function setupServer (worker) {
         }
         res.send(JSON.stringify(obj));
     });
+    app.get('/query/state/:year1/:year2/:race', function(req, res) {
+        // res.setHeader('Content-Type', 'application/json');
+        // console.log(req.params);
+        var level = "state";
+        var year1 = req.params.year1;
+        var filename = "/"+year1+"_"+level+".json";
+        var pathtoFile = config.dirs.csv + filename;
+        var json = require(pathtoFile);
+        var obj = {}
+        for(x = 0; x < json.length; x++)
+        {
+            var totalPop = 0;
+            var A =  parseInt(json[x]["B18AA"+year1])
+            if(!isNaN(A)) 
+                totalPop+= A;
+            var B =  parseInt(json[x]["B18AB"+year1])
+            if(!isNaN(B)) 
+                totalPop+= B;
+            var C =  parseInt(json[x]["B18AC"+year1]) 
+            if(!isNaN(C)) 
+                totalPop+= C;
+            var D =  parseInt(json[x]["B18AD"+year1]) 
+            if(!isNaN(D)) 
+                totalPop+= D;
+            var E =  parseInt(json[x]["B18AE"+year1])
+            if(!isNaN(E)) 
+                totalPop+= E; 
+            var race = req.params.race;
+            var target = parseInt(json[x][race+year1])
+            if(isNaN(target))
+                var density = 0;
+            else
+                var density = target*1.0/totalPop * 100;
+            obj[json[x]["STATE"]] = Math.round(density*100)/100;
+        }
+        var year2 = req.params.year2;
+        var dx = year2-year1;
+        filename = "/"+year2+"_"+level+".json";
+        pathtoFile = config.dirs.csv + filename;
+        json = require(pathtoFile);
+        velocity = {}
+        for(x = 0; x < json.length; x++)
+        {
+            var totalPop = 0;
+            var A =  parseInt(json[x]["B18AA"+year2])
+            if(!isNaN(A)) 
+                totalPop+= A;
+            var B =  parseInt(json[x]["B18AB"+year2])
+            if(!isNaN(B)) 
+                totalPop+= B;
+            var C =  parseInt(json[x]["B18AC"+year2]) 
+            if(!isNaN(C)) 
+                totalPop+= C;
+            var D =  parseInt(json[x]["B18AD"+year2]) 
+            if(!isNaN(D)) 
+                totalPop+= D;
+            var E =  parseInt(json[x]["B18AE"+year2])
+            if(!isNaN(E)) 
+                totalPop+= E; 
+            var race = req.params.race;
+            var target = parseInt(json[x][race+year2])
+            if(isNaN(target))
+                var density = 0;
+            else
+                var density = target*1.0/totalPop * 100;
+            var dy = obj[json[x]["STATE"]] - Math.round(density*100)/100;
+            velocity[json[x]["STATE"]] = Math.round(dy*100.0/dx)/100;
+        }
+        res.send(JSON.stringify(velocity));
+    });
 
      app.get('/query/county/:state/:year/:race', function(req, res) {
         // res.setHeader('Content-Type', 'application/json');
