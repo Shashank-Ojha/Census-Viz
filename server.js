@@ -105,7 +105,22 @@ function setupServer (worker) {
     // The exposeTemplates() method makes the Handlebars templates that are inside /shared/templates/
     // available to the client.
     router.get('/', [ middleware.exposeTemplates(), routes.render('home') ]);
-    
+    var _ = require('underscore');
+    app.get('/query/state/:state/:year/', function(req, res) {
+        // res.setHeader('Content-Type', 'application/json');
+        console.log(req.params);
+        var level = "state";
+        var year = req.params.year;
+        var state = req.params.state;
+        var filename = "/"+year+"_"+level+".json";
+        var pathtoFile = config.dirs.csv + filename;
+        var json = require(pathtoFile);
+        var data = _.filter(json, function(point){ 
+                  return point["STATE"] == state; 
+             });
+        res.send(JSON.stringify(data));
+    });
+
     app.get('/query/:level/:year', function(req, res) {
         // res.setHeader('Content-Type', 'application/json');
         console.log(req.params)
@@ -121,7 +136,7 @@ function setupServer (worker) {
         //     })
         //convert to json
         //display
-    })
+    });
     // Error handling middleware
     app.use(function(req, res, next){
         res.render('404', { status: 404, url: req.url });
