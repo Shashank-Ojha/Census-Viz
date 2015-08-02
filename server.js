@@ -114,6 +114,49 @@ function setupServer (worker) {
     // available to the client.
     router.get('/', [ middleware.exposeTemplates(), routes.render('home') ]);
     var _ = require('underscore');
+    app.get('/query/state/:year/:race', function(req, res) {
+        // res.setHeader('Content-Type', 'application/json');
+        // console.log(req.params);
+        var level = "state";
+        var year = req.params.year;
+        var filename = "/"+year+"_"+level+".json";
+        var pathtoFile = config.dirs.csv + filename;
+        var json = require(pathtoFile);
+        console.log(json.length);
+        var list = []
+        for(x = 0; x < json.length; x++)
+        {
+            var totalPop = 0;
+            var A =  parseInt(json[x]["B18AA"+year])
+            if(!isNaN(A)) 
+                totalPop+= A;
+            var B =  parseInt(json[x]["B18AB"+year])
+            if(!isNaN(B)) 
+                totalPop+= B;
+            var C =  parseInt(json[x]["B18AC"+year]) 
+            if(!isNaN(C)) 
+                totalPop+= C;
+            var D =  parseInt(json[x]["B18AD"+year]) 
+            if(!isNaN(D)) 
+                totalPop+= D;
+            var E =  parseInt(json[x]["B18AE"+year])
+            if(!isNaN(E)) 
+                totalPop+= E; 
+            var race = req.params.race;
+            // console.log(totalPop);
+            var target = parseInt(json[x][race+year])
+            if(isNaN(target))
+                var density = 0;
+            else
+                var density = target*1.0/totalPop * 100;
+            var obj = {}
+            obj[json[x]["STATE"]] = Math.round(density,2)
+            // console.log(stringJson);
+            list.push(obj);
+        }
+        res.send(list);
+    });
+
     app.get('/query/state/:state/:year/:race', function(req, res) {
         // res.setHeader('Content-Type', 'application/json');
         console.log(req.params);
