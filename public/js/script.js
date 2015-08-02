@@ -15,9 +15,11 @@ var translator = {
 
 var options = {
 	race: "B18AA",
-	year: "1970"
+	year: "1970",
+	change: null
 }
 
+var derivatives = document.querySelectorAll('.change')
 var items = document.querySelectorAll(".race")
 var years = document.querySelectorAll(".year")
 for(var i = 0; i < items.length; i++){
@@ -44,6 +46,21 @@ for(var i = 0; i < years.length; i++){
 		if(!initalized)
 			document.querySelector('.initialClass').classList.add('active');
 		options.year = this.dataset.type;
+		$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
+		  modifyData(JSON.parse(data));
+		  init()
+		});
+	})
+}
+for(var i = 0; i < derivatives.length; i++){
+	derivatives[i].addEventListener("click", function(){
+		for (var i = derivatives.length - 1; i >= 0; i--) {
+			derivatives[i].classList.remove('active');
+		};
+		this.classList.add('active');
+		if(!initalized)
+			document.querySelector('.initialClass').classList.add('active');
+		options.change = this.dataset.type;
 		$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
 		  modifyData(JSON.parse(data));
 		  init()
