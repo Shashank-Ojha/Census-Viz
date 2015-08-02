@@ -16,7 +16,9 @@ var translator = {
 var options = {
 	race: "B18AA",
 	year: "1970",
-	change: null
+	first: 0,
+	last: 0, 
+	rangeYears: false
 }
 
 var derivatives = document.querySelectorAll('.change')
@@ -31,16 +33,28 @@ for(var i = 0; i < items.length; i++){
 		if(!initalized)
 			document.querySelector('.initialYear').classList.add('active');
 		options.race = translator[this.dataset.type];
-		$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
-		  modifyData(JSON.parse(data));
-		  init()
-		});
+		if(!options.rangeYears){
+			$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
+			  modifyData(JSON.parse(data));
+			  init()
+			});
+		}
+		else{
+			$.get( "/query/state/" + options.first + "/" + options.last + '/' + options.race, function( data ) {
+			  modifyData(JSON.parse(data));
+			  init()
+			});
+		}
 	})
 }
 for(var i = 0; i < years.length; i++){
 	years[i].addEventListener("click", function(){
+		options.rangeYears = false;
 		for (var i = years.length - 1; i >= 0; i--) {
 			years[i].classList.remove('active');
+		};
+		for (var i = derivatives.length - 1; i >= 0; i--) {
+			derivatives[i].classList.remove('active');
 		};
 		this.classList.add('active');
 		if(!initalized)
@@ -54,14 +68,20 @@ for(var i = 0; i < years.length; i++){
 }
 for(var i = 0; i < derivatives.length; i++){
 	derivatives[i].addEventListener("click", function(){
+		options.rangeYears = true;
 		for (var i = derivatives.length - 1; i >= 0; i--) {
 			derivatives[i].classList.remove('active');
+		};
+		for (var i = years.length - 1; i >= 0; i--) {
+			years[i].classList.remove('active');
 		};
 		this.classList.add('active');
 		if(!initalized)
 			document.querySelector('.initialClass').classList.add('active');
-		options.change = this.dataset.type;
-		$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
+		yrs = this.dataset.type.split(' ');
+		options.first = yrs[0];
+		options.last = yrs[1];
+		$.get( "/query/state/" + options.first + "/" + options.last + '/' + options.race, function( data ) {
 		  modifyData(JSON.parse(data));
 		  init()
 		});
@@ -147,7 +167,7 @@ function modifyData(data){
 	diff = 0;
 
 	for (var i = percentages.length - 1; i >= 0; i--) {
-		console.log(percentages[i], min, max, i)
+		// console.log(percentages[i], min, max, i)
 		if(percentages[i] < min){
 			min = percentages[i];
 		}
@@ -171,8 +191,6 @@ function init(){
 
 	initalized = true;
 
-
-
 	// control that shows state info on hover
 	info = L.control();
 
@@ -192,14 +210,36 @@ function init(){
 
 	// get color depending on population density value
 	function getColor(d) {
-		return d > max 			? '#800026' :
-		       d > min+diff*5  	? '#BD0026' :
-		       d > min+diff*4  	? '#E31A1C' :
-		       d > min+diff*3  	? '#FC4E2A' :
-		       d > min+diff*2   ? '#FD8D3C' :
-		       d > min+diff  	? '#FEB24C' :
-		       d > min   		? '#FED976' :
-		                  		  '#FFEDA0';
+		if(!options.rangeYears){
+			return d > max 			? '#800026' :
+			       d > min+diff*5  	? '#BD0026' :
+			       d > min+diff*4  	? '#E31A1C' :
+			       d > min+diff*3  	? '#FC4E2A' :
+			       d > min+diff*2   ? '#FD8D3C' :
+			       d > min+diff  	? '#FEB24C' :
+			       d > min   		? '#FED976' :
+			                  		  '#FFEDA0';
+  		}
+  		else{
+  			var difference = max/5;
+  			if(Math.abs(min/5) > difference)
+  				difference = Math.abs(min/5);
+  			// console.log(difference, min/5, max/5);
+  			// console.log(min, max)
+  			return d < difference*-5 	? '#800026' :
+			       d < difference*-4 	? '#BD0026' :
+			       d < difference*-3 	? '#E31A1C' :
+			       d < difference*-2 	? '#FC4E2A' :
+			       d < difference*-1	? '#FD8D3C' :
+			       d < 0		  		? '#FEB24C' :
+			       d == 0				? 'white'   :
+			       d < difference    	? '#BCED91' :
+			       d < 2*difference     ? '#8BA870' :
+			       d < 3*difference     ? '#659D32' :
+			       d < 4*difference     ? '#488214' :
+			       d < 5*difference     ? '#3F6826' :
+			                  		  'darkgreen';
+  		}
 	}
 
 	function style(feature) {
