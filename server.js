@@ -13,6 +13,8 @@ routes       = require('./routes'),
 middleware   = require('./middleware'),
 config       = require('./config'),
 utils        = require('./lib/utils'),
+csv          = require('csv-parser'),
+fs           = require('fs'),
 port         = (process.env.PORT || 8000);
 
 
@@ -95,8 +97,6 @@ function setupServer (worker) {
 
     // Use the router.
     app.use(router);
-
-
     ///////////////////////////////////////////
     //              Routes                   //
     ///////////////////////////////////////////
@@ -106,12 +106,22 @@ function setupServer (worker) {
     // The exposeTemplates() method makes the Handlebars templates that are inside /shared/templates/
     // available to the client.
     router.get('/', [ middleware.exposeTemplates(), routes.render('home') ]);
-
+    
     app.get('/query/:level/:year', function(req, res) {
+        // res.setHeader('Content-Type', 'application/json');
         console.log(req.params)
         var level = req.params.level;
         var year = req.params.year;
-        res.send(level + " " + year)
+        var filename = "/"+year+"_"+level+".json";
+        var pathtoFile = config.dirs.csv + filename;
+        res.sendFile(pathtoFile);
+        // fs.createReadStream(pathtoFile)
+        //     .pipe(csv())
+        //     .on('data', function(data) {
+        //         res.send(JSON.stringify(data));
+        //     })
+        //convert to json
+        //display
     })
     // Error handling middleware
     app.use(function(req, res, next){
