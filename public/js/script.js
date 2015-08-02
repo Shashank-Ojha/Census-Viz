@@ -14,18 +14,37 @@ var translator = {
 }
 
 var options = {
-	race: "B18AA"
+	race: "B18AA",
+	year: "1970"
 }
 
 var items = document.querySelectorAll(".race")
+var years = document.querySelectorAll(".year")
 for(var i = 0; i < items.length; i++){
 	items[i].addEventListener("click", function(){
 		for (var i = items.length - 1; i >= 0; i--) {
 			items[i].classList.remove('active');
 		};
 		this.classList.add('active');
+		if(!initalized)
+			document.querySelector('.initialYear').classList.add('active');
 		options.race = translator[this.dataset.type];
-		$.get( "/query/state/1970/" + options.race, function( data ) {
+		$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
+		  modifyData(JSON.parse(data));
+		  init()
+		});
+	})
+}
+for(var i = 0; i < years.length; i++){
+	years[i].addEventListener("click", function(){
+		for (var i = years.length - 1; i >= 0; i--) {
+			years[i].classList.remove('active');
+		};
+		this.classList.add('active');
+		if(!initalized)
+			document.querySelector('.initialClass').classList.add('active');
+		options.year = this.dataset.type;
+		$.get( "/query/state/" + options.year + "/" + options.race, function( data ) {
 		  modifyData(JSON.parse(data));
 		  init()
 		});
