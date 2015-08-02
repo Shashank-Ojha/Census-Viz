@@ -1,5 +1,8 @@
 /* Application CSS */
+
+
 /* You can probably delete all this once you're ready to make changes. */
+
 body {
     background: white;
     color: #333;
@@ -8,7 +11,10 @@ body {
     padding: 20px;
 }
 
-a, a:hover, a:visited, a:focus {
+a,
+a:hover,
+a:visited,
+a:focus {
     color: #3540ff;
     text-decoration: none;
 }
@@ -19,7 +25,7 @@ a, a:hover, a:visited, a:focus {
     margin: 30px auto;
     border-radius: 10px;
     border: 1px solid #ddd;
-    box-shadow: 0 0 2px rgba(0,0,0,0.1);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .jumbotron p {
@@ -31,16 +37,33 @@ h1 small {
     font-weight: normal;
 }
 
-
-.btn, a.btn {
+.btn,
+a.btn {
     background: transparent;
     border: 1px solid #3540ff;
     border-radius: 20px;
     color: #3540ff;
     transition: all 0.33s;
 }
-.btn:hover, a.btn:hover,
-.btn:focus, a.btn:focus {
+
+.btn:hover,
+a.btn:hover,
+.btn:focus,
+a.btn:focus {
     background: #3540ff;
     color: white;
+}
+
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
 }
