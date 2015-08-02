@@ -18,8 +18,8 @@ var items = document.querySelectorAll(".race")
 for(var i = 0; i < items.length; i++){
 	items[i].addEventListener("click", function(){
 		options.race = info[this.dataset.type];
-		$.get( "/query/state/1970/B18AA", function( data ) {
-		  modifyData(data);
+		$.get( "/query/state/1970/" + options.race, function( data ) {
+		  modifyData(JSON.parse(data));
 		  init()
 		});
 	})
@@ -89,11 +89,18 @@ var statesData = {"type":"FeatureCollection","features":[
 	]};
 
 function modifyData(data){
-	var features = statesData.features;
 
-	for (var i = features.length - 1; i >= 0; i--) {
-		features[i].properties.density = data[features[i].properties.name];
+
+
+	for (var i = statesData.features.length - 1; i >= 0; i--) {
+		console.log(statesData.features[i].properties.name);
+		console.log(statesData.features[i].properties.density)
+		if(statesData.features[i].properties.name in data){
+			statesData.features[i].properties.density = data[statesData.features[i].properties.name];
+		}
 	};
+
+	console.log(statesData)
 
 }
 
