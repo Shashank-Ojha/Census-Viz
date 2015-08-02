@@ -113,7 +113,9 @@ function setupServer (worker) {
     // The exposeTemplates() method makes the Handlebars templates that are inside /shared/templates/
     // available to the client.
     router.get('/', [ middleware.exposeTemplates(), routes.render('home') ]);
+
     var _ = require('underscore');
+
     app.get('/query/state/:year/:race', function(req, res) {
         // res.setHeader('Content-Type', 'application/json');
         // console.log(req.params);
@@ -123,7 +125,7 @@ function setupServer (worker) {
         var pathtoFile = config.dirs.csv + filename;
         var json = require(pathtoFile);
         console.log(json.length);
-        var list = []
+        var obj = {}
         for(x = 0; x < json.length; x++)
         {
             var totalPop = 0;
@@ -148,11 +150,9 @@ function setupServer (worker) {
                 var density = 0;
             else
                 var density = target*1.0/totalPop * 100;
-            var obj = {}
             obj[json[x]["STATE"]] = Math.round(density,2)
-            list.push(obj);
         }
-        res.send(list);
+        res.send(JSON.stringify(obj));
     });
 
      app.get('/query/county/:state/:year/:race', function(req, res) {
@@ -167,7 +167,7 @@ function setupServer (worker) {
         var data = _.filter(json, function(point){ 
                   return point["STATE"] == state; 
              });
-        var list = [];
+        var obj = {}
         for(x = 0; x < data.length; x++)
         {
             var totalPop = 0;
@@ -192,12 +192,9 @@ function setupServer (worker) {
                 var density = 0;
             else
                 var density = target*1.0/totalPop * 100;
-            var obj = {}
             obj[data[x]["COUNTY"]] = Math.round(density,2)
-            list.push(obj);
         }
-        console.log(list);
-        res.send(list);
+        res.send(JSON.stringify(obj));
     });
 
     app.get('/query/state/:state/:year/:race', function(req, res) {
@@ -235,8 +232,9 @@ function setupServer (worker) {
             var density = 0;
         else
             var density = parseInt(data[0][race+year])*1.0/totalPop * 100;
-        var stringJson = "[{'name':" + state+ ", 'percentage': " + Math.round(density,2) + "}]";     
-        res.send(stringJson);
+        var obj = {}
+        obj[state] = Math.round(density,2);  
+        res.send(JSON.stringify(obj));
     });
 
     app.get('/query/state/:state/:year/', function(req, res) {
@@ -270,6 +268,10 @@ function setupServer (worker) {
         //convert to json
         //display
     });
+
+    app.get('/test', function(req, res) {
+        res.render('test')
+    })
     // Error handling middleware
     app.use(function(req, res, next){
         res.render('404', { status: 404, url: req.url });
